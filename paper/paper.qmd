@@ -1,17 +1,26 @@
+```yaml
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
-author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
-date: today
+title: "In-Depth Analysis of Hate Crime Bias Motivations in Toronto (2018 Onwards)"
+author:
+  - Prankit Bhardwaj
+thanks: "https://open.toronto.ca/dataset/hate-crimes-open-data/"
+date: "2024-09-27"
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
-format: pdf
-number-sections: true
-bibliography: references.bib
+abstract: "This paper explores the issue of hate crimes in Toronto and their underlying causes, highlighting the urgent need for societal awareness and intervention. Utilizing a dataset of hate crime incidents, we employed statistical methods to analyze the counts attributed to various bias categories. Our findings reveal significant trends in bias motivations over the years, underscoring the importance of understanding hate crimes to inform policies and initiatives aimed at fostering inclusivity and reducing discrimination in our communities."
+format: 
+  pdf:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    fig-cap: true
+    keep-tex: true
+    include-in-header:
+      text: |
+        \usepackage{setspace}
+        \doublespacing
+bibliography: ../references.bib
 ---
+```
 
 ```{r}
 #| include: false
@@ -19,203 +28,268 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(knitr)
 ```
-
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
+Hate crimes are criminal offenses primarily motivated by bias or prejudice against groups based on characteristics such as race, gender, religion, ethnicity, or sexual orientation. These crimes extend beyond the immediate harm inflicted upon victims; they instill a sense of insecurity and fear among targeted communities, leading to social division and erosion of societal cohesion. In recent years, there has been a significant increase in hate crimes globally. A study in Canada reported a substantial 72% increase in police-reported hate crimes from 2020 to 2021 alone, marking a three-year consecutive rise up to 2023. This alarming trend highlights the urgent need to comprehend the factors contributing to this increase and to develop strategies aimed at reducing and ultimately eliminating such hate-motivated offenses.
 
-The remainder of this paper is structured as follows. @sec-data....
+Toronto, recognized as one of the most culturally diverse cities worldwide, boasts a population where more than half identify as visible minorities (City of Toronto, 2017). While this diversity enriches the city both economically and culturally, it also presents challenges, including intercultural tensions that can undermine social harmony. The rise in hate crimes poses a threat to the multicultural fabric of Toronto, necessitating a deeper examination of these incidents to understand the motivations behind them.
 
+The Toronto Police Service's Hate Crime Unit maintains records of all reported hate crimes, including the primary motivations behind these offenses—whether they are motivated by age, sexual orientation, religion, language, ethnicity, race, mental or physical disability, gender, or multiple factors. This investigation examines the bias motivations behind hate crimes in Toronto over the past few years, aiming to identify patterns and trends that can inform effective strategies to combat hate-motivated offenses.
 
+**Research Questions:**
 
-# Data {#sec-data}
+- What are the trends in hate crime incidents in Toronto from 2018 onwards?
+- How have bias motivations (race, religion, sexual orientation, etc.) evolved over time?
+- Are there geographical clusters of hate crime incidents in certain neighborhoods?
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+# Data Description
+
+## Data Overview
+
+The dataset used in this analysis is sourced from [Open Data Toronto](https://open.toronto.ca/dataset/hate-crimes-open-data/), specifically from the Toronto Police Service's verified hate crime occurrences. It includes all confirmed hate crimes investigated by the Hate Crime Unit from 2018 onwards. The dataset provides valuable information to enhance public safety and awareness about hate crimes in Toronto.
+
+Key variables in the dataset include:
+
+- **`EVENT_UNIQUE_ID`**: A unique identifier for each offense.
+- **`OCCURRENCE_YEAR`**: The year in which the offense occurred.
+- **Bias Motivation Variables**:
+  - **`RACE_BIAS`**
+  - **`RELIGION_BIAS`**
+  - **`SEXUAL_ORIENTATION_BIAS`**
+  - **`GENDER_BIAS`**
+  - **`AGE_BIAS`**
+  - **`MENTAL_OR_PHYSICAL_DISABILITY`**
+  - **`ETHNICITY_BIAS`**
+  - **`LANGUAGE_BIAS`**
+- **`NEIGHBOURHOOD_140`**: The neighborhood where the incident occurred.
+- **`PRIMARY_OFFENCE`**: The type of offense committed.
+
+# Data Cleaning and Preparation
+
+To prepare the data for analysis, several steps were undertaken to clean and transform the dataset.
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
+#| label: setup
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+# Load necessary libraries
+library(tidyverse)
+library(lubridate)
 ```
 
-Talk way more about it. 
-
-
-
-# Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
-
-# Results
-
-Our results are summarized in @tbl-modelresults.
-
 ```{r}
-#| echo: false
-#| eval: true
+#| label: load-data
 #| warning: false
 #| message: false
 
-library(rstanarm)
+# Load the raw dataset
+raw_data <- read_csv("../data/01-raw_data/raw_data.csv")
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
+# View the structure of the dataset
+str(raw_data)
 ```
 
 ```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| label: filter-data
 #| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
-
-
-
-
-# Discussion
-
-## First discussion point {#sec-first-point}
-
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
-
-## Second discussion point
-
-## Third discussion point
-
-## Weaknesses and next steps
-
-Weaknesses and next steps should also be included.
-
-\newpage
-
-\appendix
-
-# Appendix {-}
-
-
-# Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
 #| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
+# Filter the dataset for 2018 onwards
+cleaned_data <- raw_data %>%
+  filter(OCCURRENCE_YEAR >= 2018)
 ```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
 
 ```{r}
-#| echo: false
-#| eval: true
-#| message: false
+#| label: handle-missing
 #| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
+#| message: false
 
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
+# Handle missing values in key bias motivation variables
+cleaned_data <- cleaned_data %>%
+  filter(!is.na(OCCURRENCE_YEAR) & 
+         (!is.na(RACE_BIAS) | !is.na(RELIGION_BIAS) |
+          !is.na(SEXUAL_ORIENTATION_BIAS) | !is.na(GENDER_BIAS) | 
+          !is.na(AGE_BIAS) | !is.na(MENTAL_OR_PHYSICAL_DISABILITY) |
+          !is.na(ETHNICITY_BIAS) | !is.na(LANGUAGE_BIAS)))
 ```
 
+```{r}
+#| label: consolidate-bias
+#| warning: false
+#| message: false
 
+# Consolidate bias motivation variables into a single column
+cleaned_data <- cleaned_data %>%
+  mutate(BiasMotivation = case_when(
+    RACE_BIAS != "None" ~ "Race/Ethnicity",
+    RELIGION_BIAS != "None" ~ "Religion",
+    SEXUAL_ORIENTATION_BIAS != "None" ~ "Sexual Orientation",
+    GENDER_BIAS != "None" ~ "Gender",
+    AGE_BIAS == "YES" ~ "Age",
+    MENTAL_OR_PHYSICAL_DISABILITY == "YES" ~ "Disability",
+    ETHNICITY_BIAS != "None" ~ "Ethnicity",
+    LANGUAGE_BIAS != "None" ~ "Language",
+    TRUE ~ "Other"
+  ))
+```
 
-\newpage
+```{r}
+#| label: format-date
+#| warning: false
+#| message: false
 
+# Convert occurrence date to proper date format
+cleaned_data <- cleaned_data %>%
+  mutate(OCCURRENCE_DATE = as.Date(OCCURRENCE_DATE, format = "%Y-%m-%d"))
+```
+
+```{r}
+#| label: view-cleaned-data
+#| warning: false
+#| message: false
+
+# View the cleaned data
+head(cleaned_data)
+```
+
+# Exploratory Data Analysis
+
+## Total Hate Crimes Over Time
+
+We first examine the total number of hate crimes reported each year to understand overall trends.
+
+```{r}
+#| label: fig-total-crimes
+#| fig-cap: "Total hate crimes reported each year in Toronto from 2018 onwards."
+#| warning: false
+#| message: false
+
+# Summary of hate crimes per year
+summary_by_year <- cleaned_data %>%
+  group_by(OCCURRENCE_YEAR) %>%
+  summarise(TotalCrimes = n())
+
+# Visualize total hate crimes per year
+ggplot(summary_by_year, aes(x = OCCURRENCE_YEAR, y = TotalCrimes)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Total Hate Crimes per Year (2018 Onwards)",
+       x = "Year", y = "Number of Crimes") +
+  theme_minimal()
+```
+
+As shown in Figure \@ref(fig-total-crimes), the total number of hate crimes...
+
+## Hate Crimes by Bias Motivation
+
+Next, we analyze how hate crimes are distributed across different bias motivations each year.
+
+```{r}
+#| label: fig-bias-motivation
+#| fig-cap: "Hate crimes broken down by bias motivation from 2018 onwards."
+#| warning: false
+#| message: false
+
+# Summary of hate crimes by year and bias motivation
+summary_by_bias <- cleaned_data %>%
+  group_by(OCCURRENCE_YEAR, BiasMotivation) %>%
+  summarise(TotalCrimes = n())
+
+# Visualize hate crimes by bias motivation over time
+ggplot(summary_by_bias, aes(x = OCCURRENCE_YEAR, y = TotalCrimes, fill = BiasMotivation)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Hate Crimes by Bias Motivation (2018 Onwards)",
+       x = "Year", y = "Number of Crimes", fill = "Bias Motivation") +
+  theme_minimal()
+```
+
+Figure
+
+ \@ref(fig-bias-motivation) illustrates the distribution of hate crimes by bias motivation...
+
+## Proportional Analysis of Bias Motivations
+
+We perform a proportional analysis to understand the relative prevalence of each bias motivation over time.
+
+```{r}
+#| label: fig-bias-proportion
+#| fig-cap: "Proportional analysis of bias motivations in hate crimes over time."
+#| warning: false
+#| message: false
+
+# Proportion of bias motivations per year
+summary_by_bias_prop <- cleaned_data %>%
+  group_by(OCCURRENCE_YEAR, BiasMotivation) %>%
+  summarise(TotalCrimes = n()) %>%
+  group_by(OCCURRENCE_YEAR) %>%
+  mutate(Proportion = TotalCrimes / sum(TotalCrimes))
+
+# Visualize proportional analysis
+ggplot(summary_by_bias_prop, aes(x = OCCURRENCE_YEAR, y = Proportion, fill = BiasMotivation)) +
+  geom_area(position = "fill", alpha = 0.7) +
+  labs(title = "Proportional Analysis of Bias Motivations (2018 Onwards)",
+       x = "Year", y = "Proportion", fill = "Bias Motivation") +
+  theme_minimal()
+```
+
+As seen in Figure \@ref(fig-bias-proportion), the relative prevalence of each bias motivation...
+
+# Geographical Analysis
+
+## Hate Crimes by Neighborhood
+
+We analyze the geographical distribution of hate crimes to identify potential hotspots.
+
+```{r}
+#| label: fig-neighborhoods
+#| fig-cap: "Top 20 neighborhoods in Toronto with the most hate crime incidents from 2018 onwards."
+#| warning: false
+#| message: false
+
+# Summary of hate crimes by neighborhood
+summary_by_neighborhood <- cleaned_data %>%
+  group_by(NEIGHBOURHOOD_140) %>%
+  summarise(TotalCrimes = n()) %>%
+  arrange(desc(TotalCrimes))
+
+# Visualize hate crimes by neighborhood (Top 20 neighborhoods)
+ggplot(summary_by_neighborhood %>% top_n(20, TotalCrimes),
+       aes(x = reorder(NEIGHBOURHOOD_140, TotalCrimes), y = TotalCrimes)) +
+  geom_bar(stat = "identity", fill = "darkred") +
+  coord_flip() +
+  labs(title = "Top 20 Neighborhoods by Hate Crime Incidents (2018 Onwards)",
+       x = "Neighborhood", y = "Number of Crimes") +
+  theme_minimal()
+```
+
+Figure \@ref(fig-neighborhoods) shows the top neighborhoods with the highest number of hate crimes...
+
+# Conclusion
+
+In this analysis, we examined hate crime trends in Toronto from 2018 onwards. The data reveals patterns in bias motivations and geographical distributions, providing insights into how hate crimes have evolved over recent years. Understanding these trends is crucial for developing targeted interventions and policies to combat hate crimes and promote community safety.
+
+# Future Work
+
+Future research could explore the relationship between hate crime trends and external socio-political events or demographic changes. Additionally, qualitative studies could provide deeper insights into the underlying causes of hate crimes.
 
 # References
 
+- City of Toronto. (2017). **Toronto's racial diversity**. [Link](https://www.toronto.ca)
+- Statistics Canada. (2022). **Police-reported hate crime in Canada, 2021**. [Link](https://www150.statcan.gc.ca)
 
+# Saving the Cleaned Data
+
+```{r}
+#| echo: true
+#| warning: false
+#| message: false
+
+# Save the cleaned dataset for future use
+write_csv(cleaned_data, "../data/03-cleaned_data/cleaned_data.csv")
+```

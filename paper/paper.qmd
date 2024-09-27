@@ -13,7 +13,6 @@ format:
     number-sections: true
     fig-cap: true
 bibliography: ../references.bib
-
 ---
 ```
 
@@ -181,6 +180,7 @@ We first examine the total number of hate crimes reported each year to understan
 #| fig-cap: "Total hate crimes reported each year in Toronto from 2018 onwards."
 #| warning: false
 #| message: false
+#| echo: false
 
 # Summary of hate crimes per year
 summary_by_year <- cleaned_data %>%
@@ -195,7 +195,7 @@ ggplot(summary_by_year, aes(x = OCCURRENCE_YEAR, y = TotalCrimes)) +
   theme_minimal()
 ```
 
-As shown in Figure \@ref(fig-total-crimes), the total number of hate crimes...
+As shown in Figure \@ref(fig-total-crimes), the total number of hate crimes have only gone up since 2018, with them peaking in 2023. The substantial increase from 2022 to 2023 indicates a major growing hate towards different cultures.
 
 ## Hate Crimes by Bias Motivation
 
@@ -206,6 +206,7 @@ Next, we analyze how hate crimes are distributed across different bias motivatio
 #| fig-cap: "Hate crimes broken down by bias motivation from 2018 onwards."
 #| warning: false
 #| message: false
+#| echo: false
 
 # Summary of hate crimes by year and bias motivation
 summary_by_bias <- cleaned_data %>%
@@ -222,7 +223,7 @@ ggplot(summary_by_bias, aes(x = OCCURRENCE_YEAR, y = TotalCrimes, fill = BiasMot
 
 Figure
 
- \@ref(fig-bias-motivation) illustrates the distribution of hate crimes by bias motivation...
+ \@ref(fig-bias-motivation) illustrates the distribution of hate crimes by bias motivation and if we can see clearly, the major reasons why hate crimes exist are due to religion being number one, race/ethnicity being the second and sexual orientation being third. Just given how vastly intercultural Toronto is, and given more than half of its population identifies as visible minorities (City of Toronto, 2017). 
 
 ## Proportional Analysis of Bias Motivations
 
@@ -233,6 +234,7 @@ We perform a proportional analysis to understand the relative prevalence of each
 #| fig-cap: "Proportional analysis of bias motivations in hate crimes over time."
 #| warning: false
 #| message: false
+#| echo: false
 
 # Proportion of bias motivations per year
 summary_by_bias_prop <- cleaned_data %>%
@@ -262,6 +264,7 @@ We analyze the geographical distribution of hate crimes to identify potential ho
 #| fig-cap: "Top 20 neighborhoods in Toronto with the most hate crime incidents from 2018 onwards."
 #| warning: false
 #| message: false
+#| echo: false
 
 # Summary of hate crimes by neighborhood
 summary_by_neighborhood <- cleaned_data %>%
@@ -293,6 +296,7 @@ Future research could explore the relationship between hate crime trends and ext
 
 - City of Toronto. (2017). **Toronto's racial diversity**. [Link](https://www.toronto.ca)
 - Statistics Canada. (2022). **Police-reported hate crime in Canada, 2021**. [Link](https://www150.statcan.gc.ca)
+
 
 # Saving the Cleaned Data
 

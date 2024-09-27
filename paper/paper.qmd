@@ -195,7 +195,7 @@ ggplot(summary_by_year, aes(x = OCCURRENCE_YEAR, y = TotalCrimes)) +
   theme_minimal()
 ```
 
-As shown in Figure \@ref(fig-total-crimes), the total number of hate crimes have only gone up since 2018, with them peaking in 2023. The substantial increase from 2022 to 2023 indicates a major growing hate towards different cultures.
+\@ref(fig-total-crimes), The bar chart shows the **total number of hate crimes per year** from 2018 onwards. There is a notable upward trend, with hate crimes rising from around 200 incidents in 2018 and 2019 to over 300 by 2023. After a steady rise from 2019 to 2020, there is a slight dip in 2021, followed by a sharp increase in 2023, which marks the highest number of hate crimes reported during the period. This trend suggests that hate crimes have been increasing over time, with a particular spike in the most recent year, signaling a need for further investigation into the underlying causes.
 
 ## Hate Crimes by Bias Motivation
 
@@ -223,8 +223,7 @@ ggplot(summary_by_bias, aes(x = OCCURRENCE_YEAR, y = TotalCrimes, fill = BiasMot
 
 Figure
 
- \@ref(fig-bias-motivation) illustrates the distribution of hate crimes by bias motivation and if we can see clearly, the major reasons why hate crimes exist are due to religion being number one, race/ethnicity being the second and sexual orientation being third. Just given how vastly intercultural Toronto is, and given more than half of its population identifies as visible minorities (City of Toronto, 2017). 
-
+ \@ref(fig-bias-motivation) The bar chart illustrates the number of hate crimes distributed by bias motivation from 2018 onwards. Sexual Orientation and Race/Ethnicity show the highest number of incidents across the years, with notable spikes in 2018 and 2022. Religion consistently accounts for a significant portion, especially in 2020 and 2022. Other categories like Ethnicity, Gender, and Disability remain comparatively low, with Disability and Language appearing infrequently. The chart highlights the disproportionate representation of Sexual Orientation, Race/Ethnicity, and Religion in hate crimes over time, with some fluctuations in their relative distribution year to year.
 ## Proportional Analysis of Bias Motivations
 
 We perform a proportional analysis to understand the relative prevalence of each bias motivation over time.
@@ -251,7 +250,7 @@ ggplot(summary_by_bias_prop, aes(x = OCCURRENCE_YEAR, y = Proportion, fill = Bia
   theme_minimal()
 ```
 
-As seen in Figure \@ref(fig-bias-proportion), the relative prevalence of each bias motivation...
+As seen in Figure \@ref(fig-bias-proportion), The proportional analysis of bias motivations from 2018 onwards shows that Race/Ethnicity and Religion consistently make up the largest share of hate crimes, with a noticeable dip in Race/Ethnicity between 2018 and 2021, followed by a rise in 2022-2023. Sexual Orientation has shown a small but steady increase since 2020, while Gender and Language remain minor factors throughout. Overall, the proportions remain relatively stable, highlighting that these two primary motivations dominate the bias landscape for hate crimes during this period.
 
 # Geographical Analysis
 

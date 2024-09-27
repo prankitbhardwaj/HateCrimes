@@ -287,6 +287,10 @@ Figure \@ref(fig-neighborhoods) shows the top neighborhoods with the highest num
 
 In this analysis, we examined hate crime trends in Toronto from 2018 onwards. The data reveals patterns in bias motivations and geographical distributions, providing insights into how hate crimes have evolved over recent years. Understanding these trends is crucial for developing targeted interventions and policies to combat hate crimes and promote community safety.
 
+#Limitations
+
+The dataset only includes confirmed hate crimes, excluding occurrences that were unfounded or classified as hate incidents. It is designed to provide information for public safety and awareness, but to protect the privacy of individuals and communities involved, the location data has been aggregated to the neighborhood level. This ensures that no specific addresses or precise locations are revealed.
+
 # Future Work
 
 Future research could explore the relationship between hate crime trends and external socio-political events or demographic changes. Additionally, qualitative studies could provide deeper insights into the underlying causes of hate crimes.

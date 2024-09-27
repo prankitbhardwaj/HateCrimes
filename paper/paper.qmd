@@ -52,7 +52,29 @@ The Toronto Police Service's Hate Crime Unit maintains records of all reported h
 
 ## Data Overview
 
-The dataset used in this analysis is sourced from [Open Data Toronto](https://open.toronto.ca/dataset/hate-crimes-open-data/), specifically from the Toronto Police Service's verified hate crime occurrences. It includes all confirmed hate crimes investigated by the Hate Crime Unit from 2018 onwards. The dataset provides valuable information to enhance public safety and awareness about hate crimes in Toronto.
+The dataset used for this analysis includes all verified Hate Crime occurrences investigated by the Hate Crime Unit of the Toronto Police Service from 2018 onwards. The data is structured at the offense and/or occurrence level, meaning that a single occurrence may involve multiple bias categories. This structure allows the dataset to comprehensively represent incidents where victims are targeted based on more than one bias factor.
+
+The hate crime categories, also known as bias categories, include:
+
+- Age
+- Mental or Physical Disability
+- Race
+- Ethnicity
+- Language
+- Religion
+- Sexual Orientation
+- Gender
+- Other Similar Factors
+Each bias category reflects the primary motivation behind the hate crime, as perceived by the investigators.
+
+### Hate Crime vs. Hate Incident
+A key distinction in understanding the dataset is between hate crimes and hate incidents:
+
+**Hate Crime:** A hate crime is a criminal offense committed against a person or property that is motivated, either in whole or in part, by bias, prejudice, or hate based on characteristics such as race, ethnicity, language, religion, sexual orientation, or gender identity. These offenses are prosecutable under criminal law.
+
+**Hate Incident:** In contrast, a hate incident refers to non-criminal actions or behaviors motivated by hate against an identifiable group. Examples of hate incidents include the use of racial slurs, offensive remarks, or other discriminatory behavior that does not meet the threshold of a criminal offense. While hate incidents are not included in this dataset, understanding the distinction between them is important when analyzing the broader context of bias-motivated behaviors in a city as diverse as Toronto.
+
+
 
 Key variables in the dataset include:
 
@@ -70,14 +92,13 @@ Key variables in the dataset include:
 - **`NEIGHBOURHOOD_140`**: The neighborhood where the incident occurred.
 - **`PRIMARY_OFFENCE`**: The type of offense committed.
 
-# Data Cleaning and Preparation
-
-To prepare the data for analysis, several steps were undertaken to clean and transform the dataset.
+## Results
 
 ```{r}
 #| label: setup
 #| warning: false
 #| message: false
+#| echo: false
 
 # Load necessary libraries
 library(tidyverse)
@@ -88,18 +109,18 @@ library(lubridate)
 #| label: load-data
 #| warning: false
 #| message: false
+#| echo: false
 
 # Load the raw dataset
 raw_data <- read_csv("../data/01-raw_data/raw_data.csv")
 
-# View the structure of the dataset
-str(raw_data)
 ```
 
 ```{r}
 #| label: filter-data
 #| warning: false
 #| message: false
+#| echo: false
 
 # Filter the dataset for 2018 onwards
 cleaned_data <- raw_data %>%
@@ -110,6 +131,7 @@ cleaned_data <- raw_data %>%
 #| label: handle-missing
 #| warning: false
 #| message: false
+#| echo: false
 
 # Handle missing values in key bias motivation variables
 cleaned_data <- cleaned_data %>%
@@ -124,6 +146,7 @@ cleaned_data <- cleaned_data %>%
 #| label: consolidate-bias
 #| warning: false
 #| message: false
+#| echo: false
 
 # Consolidate bias motivation variables into a single column
 cleaned_data <- cleaned_data %>%
@@ -144,20 +167,13 @@ cleaned_data <- cleaned_data %>%
 #| label: format-date
 #| warning: false
 #| message: false
+#| echo: false
 
 # Convert occurrence date to proper date format
 cleaned_data <- cleaned_data %>%
   mutate(OCCURRENCE_DATE = as.Date(OCCURRENCE_DATE, format = "%Y-%m-%d"))
 ```
 
-```{r}
-#| label: view-cleaned-data
-#| warning: false
-#| message: false
-
-# View the cleaned data
-head(cleaned_data)
-```
 
 # Exploratory Data Analysis
 

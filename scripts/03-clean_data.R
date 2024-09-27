@@ -8,37 +8,76 @@
 # Any other information needed? [...UPDATE THIS...]
 
 #### Workspace setup ####
-library(tidyverse)
+# Load necessary libraries
+library(tidyverse)    # For data manipulation
+library(lubridate)    # For handling dates
 
-#### Clean data ####
-raw_data <- read_csv("inputs/data/plane_data.csv")
+# Load the dataset
+hate_crimes <- read_csv("data/01-raw_data/raw_data.csv")
 
-cleaned_data <-
-  raw_data |>
-  janitor::clean_names() |>
-  select(wing_width_mm, wing_length_mm, flying_time_sec_first_timer) |>
-  filter(wing_width_mm != "caw") |>
+# View the structure of the dataset to understand the columns
+str(hate_crimes)
+
+# Step 1: Filter Data Starting from 2018 (if not already done)
+# Ensure that only data from 2018 onwards is included
+hate_crimes_clean <- hate_crimes %>%
+  filter(OCCURRENCE_YEAR >= 2018)
+
+# Step 2: Handle Missing Values
+# Check for missing values in key columns
+colSums(is.na(hate_crimes_clean))
+
+# We can decide to remove rows with missing values in important columns such as bias motivations
+hate_crimes_clean <- hate_crimes_clean %>%
+  filter(
+    !is.na(OCCURRENCE_YEAR) &   # Ensure year is present
+      (!is.na(RACE_BIAS) | !is.na(RELIGION_BIAS) | 
+         !is.na(SEXUAL_ORIENTATION_BIAS) | !is.na(GENDER_BIAS) | 
+         !is.na(AGE_BIAS) | !is.na(MENTAL_OR_PHYSICAL_DISABILITY) |
+         !is.na(ETHNICITY_BIAS) | !is.na(LANGUAGE_BIAS))  # At least one bias motivation is present
+  )
+
+# Step 3: Standardize Bias Motivation Columns
+# Create a unified BiasMotivation column based on all the different bias-related variables
+hate_crimes_clean <- hate_crimes_clean %>%
+  mutate(BiasMotivation = case_when(
+    RACE_BIAS != "None" ~ "Race/Ethnicity",
+    RELIGION_BIAS != "None" ~ "Religion",
+    SEXUAL_ORIENTATION_BIAS != "None" ~ "Sexual Orientation",
+    GENDER_BIAS != "None" ~ "Gender",
+    AGE_BIAS == "YES" ~ "Age",
+    MENTAL_OR_PHYSICAL_DISABILITY == "YES" ~ "Disability",
+    ETHNICITY_BIAS != "None" ~ "Ethnicity",
+    LANGUAGE_BIAS != "None" ~ "Language",
+    TRUE ~ "Other"  # If no other biases, categorize as "Other"
+  ))
+
+# Step 4: Convert Dates to Date Format
+# Ensure that dates are correctly formatted for any time-based analysis
+hate_crimes_clean <- hate_crimes_clean %>%
   mutate(
-    flying_time_sec_first_timer = if_else(flying_time_sec_first_timer == "1,35",
-                                   "1.35",
-                                   flying_time_sec_first_timer)
-  ) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "490",
-                                 "49",
-                                 wing_width_mm)) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "6",
-                                 "60",
-                                 wing_width_mm)) |>
-  mutate(
-    wing_width_mm = as.numeric(wing_width_mm),
-    wing_length_mm = as.numeric(wing_length_mm),
-    flying_time_sec_first_timer = as.numeric(flying_time_sec_first_timer)
-  ) |>
-  rename(flying_time = flying_time_sec_first_timer,
-         width = wing_width_mm,
-         length = wing_length_mm
-         ) |> 
-  tidyr::drop_na()
+    OCCURRENCE_DATE = as.Date(OCCURRENCE_DATE, format = "%Y-%m-%d"),
+    REPORTED_DATE = as.Date(REPORTED_DATE, format = "%Y-%m-%d")
+  )
 
-#### Save data ####
-write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+# Step 5: Remove Unnecessary or Redundant Columns
+# Keep only relevant columns for the analysis
+hate_crimes_clean <- hate_crimes_clean %>%
+  select(
+    OCCURRENCE_YEAR, OCCURRENCE_DATE, REPORTED_DATE,
+    BiasMotivation, PRIMARY_OFFENCE, NEIGHBOURHOOD_140, ARREST_MADE
+  )
+
+# Step 6: Remove Duplicates (if any)
+hate_crimes_clean <- hate_crimes_clean %>%
+  distinct()
+
+# Step 7: Check the Final Cleaned Data
+# View the first few rows of the cleaned data
+head(hate_crimes_clean)
+
+# View the structure of the cleaned data to ensure it is ready for analysis
+str(hate_crimes_clean)
+
+# Step 8: Save the Cleaned Data to a New CSV File
+write_csv(hate_crimes_clean, "data/03-cleaned_data/cleaned_data.csv")

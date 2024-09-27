@@ -1,24 +1,19 @@
 ```yaml
 ---
-title: "In-Depth Analysis of Hate Crime Bias Motivations in Toronto (2018 Onwards)"
-author:
+title: "In-Depth Analysis of Hate Crime Bias Motivations in Toronto"
+author: 
   - Prankit Bhardwaj
 thanks: "https://open.toronto.ca/dataset/hate-crimes-open-data/"
 date: "2024-09-27"
-date-format: long
-abstract: "This paper explores the issue of hate crimes in Toronto and their underlying causes, highlighting the urgent need for societal awareness and intervention. Utilizing a dataset of hate crime incidents, we employed statistical methods to analyze the counts attributed to various bias categories. Our findings reveal significant trends in bias motivations over the years, underscoring the importance of understanding hate crimes to inform policies and initiatives aimed at fostering inclusivity and reducing discrimination in our communities."
-format: 
+format:
+  html: false
   pdf:
     toc: true
     toc-depth: 3
     number-sections: true
     fig-cap: true
-    keep-tex: true
-    include-in-header:
-      text: |
-        \usepackage{setspace}
-        \doublespacing
 bibliography: ../references.bib
+
 ---
 ```
 

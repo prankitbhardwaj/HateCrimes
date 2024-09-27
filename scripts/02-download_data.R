@@ -28,6 +28,6 @@ data_resource <- resources[resources$format == "CSV", ]
 data <- read.csv(data_resource$path)
 
 # Save the data to the data directory
-write_csv(data, "data/raw_data/raw_data.csv")
+write_csv(data, "data/01-raw_data/raw_data.csv")
 
          

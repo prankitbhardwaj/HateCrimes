@@ -13,29 +13,21 @@ install.packages("opendatatoronto")
 
 library(opendatatoronto)
 library(tidyverse)
-library(dplyr)
 
 
 #### Download data ####
-packages <- search_packages("hate crimes")
+package <- search_packages("hate crimes open data")[[1]]
 
-# Extract the first result's ID (package ID)
-package_id <- packages$id[1]
+# Get the resources associated with the package
+resources <- list_package_resources(package)
 
-# Use the package ID to get the dataset resources
-resources <- list_package_resources(package_id)
+# Filter to the CSV file
+data_resource <- resources[resources$format == "CSV", ]
 
-# Filter to get the resource with CSV format
-data_resource <- resources %>%
-  filter(format == "CSV")
-
-# Download the data using the resource ID
-data <- get_resource(data_resource$id[1])
-
-# View the first few rows of the dataset
-print(head(data))
+# Download the data
+data <- read.csv(data_resource$path)
 
 # Save the data to the data directory
-write_csv(data, "data/01-raw_data/raw_data.csv")
+write_csv(data, "data/raw_data/raw_data.csv")
 
          
